@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Production Orders{% endblock %}
+{% block page_title %}{% if status_label %}{{ status_label }} Orders{% else %}Production Orders{% endif %}{% endblock %}
+{% block page_actions %}
+  <a href="{% url 'production:order_create' %}" class="btn btn-primary"><i class="fas fa-plus mr-1"></i> New Order</a>
+{% endblock %}
+
+{% block content %}
+<!-- Filter buttons: each one uses the dynamic URL /production/orders/status/<status>/ -->
+<div class="mb-3">
+  <a href="{% url 'production:order_list' %}" class="btn btn-sm {% if not status_label %}btn-dark{% else %}btn-outline-dark{% endif %}">All</a>
+  <a href="{% url 'production:orders_by_status' 'planned' %}" class="btn btn-sm {% if status_label == 'Planned' %}btn-secondary{% else %}btn-outline-secondary{% endif %}">Planned</a>
+  <a href="{% url 'production:orders_by_status' 'in_progress' %}" class="btn btn-sm {% if status_label == 'In progress' %}btn-primary{% else %}btn-outline-primary{% endif %}">In progress</a>
+  <a href="{% url 'production:orders_by_status' 'completed' %}" class="btn btn-sm {% if status_label == 'Completed' %}btn-success{% else %}btn-outline-success{% endif %}">Completed</a>
+  <a href="{% url 'production:orders_by_status' 'cancelled' %}" class="btn btn-sm {% if status_label == 'Cancelled' %}btn-danger{% else %}btn-outline-danger{% endif %}">Cancelled</a>
+</div>
+<div class="card">
+  <div class="card-body p-0 table-responsive">
+    <table class="table table-striped table-hover table-compact mb-0">
+      <thead><tr><th>Order No.</th><th>Product</th><th>Line / Supervisor</th><th style="width: 15%;">Progress</th><th>Due</th><th>Status</th><th class="actions">Actions</th></tr></thead>
+      <tbody>
+        {% for o in orders %}
+        <tr>
+          <td class="text-nowrap"><a href="{% url 'production:order_detail' o.pk %}"><strong>{{ o.order_no }}</strong></a></td>
+          <td>{{ o.product.name }}<br><small class="text-muted">{{ o.product.code }}</small></td>
+          <td>{{ o.line.name }}<br><small class="text-muted"><i class="fas fa-user-tie"></i> {{ o.supervisor.full_name|default:"No supervisor" }}</small></td>
+          <td>
+            <div class="progress progress-thin"><div class="progress-bar {% if o.progress == 100 %}bg-success{% else %}bg-primary{% endif %}" style="width: {{ o.progress }}%"></div></div>
+            <small class="text-muted">{{ o.quantity_produced }} / {{ o.quantity }}</small>
+          </td>
+          <td class="text-nowrap">{{ o.due_date|date:"j M" }}{% if o.is_overdue %} <i class="fas fa-clock text-warning" title="Overdue"></i>{% endif %}</td>
+          <td class="text-nowrap">{% include "production/status_badge.html" with status=o.status label=o.get_status_display %}</td>
+          {% url 'production:order_detail' o.pk as view_url %}
+          {% url 'production:order_update' o.pk as edit_url %}
+          {% url 'production:order_delete' o.pk as delete_url %}
+          {% include "actions.html" %}
+        </tr>
+        {% empty %}
+        <tr><td colspan="7">No production orders found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,2 @@
+{# Small reusable piece: coloured badge for an order status #}
+<span class="badge {% if status == 'COMPLETED' %}bg-success{% elif status == 'IN_PROGRESS' %}bg-primary{% elif status == 'CANCELLED' %}bg-danger{% else %}bg-secondary{% endif %}">{{ label }}</span>

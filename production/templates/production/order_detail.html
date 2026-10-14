@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}{{ order.order_no }}{% endblock %}
+{% block page_title %}Order {{ order.order_no }}{% endblock %}
+{% block page_actions %}
+  <a href="{% url 'production:order_update' order.pk %}" class="btn btn-warning"><i class="fas fa-edit mr-1"></i> Edit / Record Output</a>
+  <a href="{% url 'production:order_delete' order.pk %}" class="btn btn-danger"><i class="fas fa-trash mr-1"></i> Delete</a>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-5">
+    <div class="card card-primary card-outline">
+      <div class="card-body">
+        <h3 class="profile-username">{{ order.product.name }}</h3>
+        <p class="text-muted">{{ order.product.code }} &middot; size {{ order.product.size }}</p>
+        <div class="progress mb-1"><div class="progress-bar {% if order.progress == 100 %}bg-success{% else %}bg-primary{% endif %}" style="width: {{ order.progress }}%">{{ order.progress }}%</div></div>
+        <p class="mb-3"><small>{{ order.quantity_produced }} of {{ order.quantity }} units produced</small></p>
+        <ul class="list-group list-group-unbordered mb-0">
+          <li class="list-group-item"><b>Status</b> <span class="float-right">{% include "production/status_badge.html" with status=order.status label=order.get_status_display %}</span></li>
+          <li class="list-group-item"><b>Line</b> <span class="float-right"><a href="{% url 'production:line_detail' order.line.pk %}">{{ order.line.name }}</a></span></li>
+          <li class="list-group-item"><b>Supervisor</b> <span class="float-right">{{ order.supervisor.full_name|default:"-" }}</span></li>
+          <li class="list-group-item"><b>Start date</b> <span class="float-right">{{ order.start_date }}</span></li>
+          <li class="list-group-item"><b>Due date</b> <span class="float-right">{{ order.due_date }}{% if order.is_overdue %} <span class="badge bg-warning">Overdue</span>{% endif %}</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header"><h3 class="card-title"><i class="fas fa-boxes mr-1"></i> Materials Needed for Remaining Units</h3></div>
+      <div class="card-body p-0 table-responsive">
+        <table class="table table-striped mb-0">
+          <thead><tr><th>Material</th><th>Needed</th><th>In stock</th><th></th></tr></thead>
+          <tbody>
+            {% for r in requirements %}
+            <tr>
+              <td>{{ r.material.name }}</td>
+              <td>{{ r.needed|floatformat:-2 }} {{ r.material.unit }}</td>
+              <td>{{ r.in_stock|floatformat:-2 }} {{ r.material.unit }}</td>
+              <td>{% if r.enough %}<span class="badge bg-success">Enough</span>{% else %}<span class="badge bg-danger">Short</span>{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">This product has no bill of materials yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<a href="{% url 'production:order_list' %}" class="btn btn-default"><i class="fas fa-arrow-left mr-1"></i> Back to orders</a>
+{% endblock %}

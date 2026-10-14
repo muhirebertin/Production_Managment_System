@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.code }}{% endblock %}
+{% block page_title %}{{ product.code }} - {{ product.name }}{% endblock %}
+{% block page_actions %}
+  <a href="{% url 'inventory:product_update' product.pk %}" class="btn btn-warning"><i class="fas fa-edit mr-1"></i> Edit</a>
+  <a href="{% url 'inventory:product_delete' product.pk %}" class="btn btn-danger"><i class="fas fa-trash mr-1"></i> Delete</a>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-4">
+    <div class="card card-primary card-outline">
+      <div class="card-body box-profile">
+        <div class="text-center"><i class="fas fa-tshirt fa-4x text-primary"></i></div>
+        <h3 class="profile-username text-center">{{ product.name }}</h3>
+        <p class="text-muted text-center">{{ product.code }}</p>
+        <ul class="list-group list-group-unbordered mb-0">
+          <li class="list-group-item"><b>Category</b> <span class="float-right">{{ product.get_category_display }}</span></li>
+          <li class="list-group-item"><b>Size</b> <span class="float-right">{{ product.get_size_display }}</span></li>
+          <li class="list-group-item"><b>Unit price</b> <span class="float-right">{{ product.unit_price|floatformat:0 }} RWF</span></li>
+          <li class="list-group-item"><b>Production orders</b> <span class="float-right">{{ orders|length }}</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Bill of Materials (per 1 unit)</h3>
+        <div class="card-tools"><a href="{% url 'inventory:bom_add' product.pk %}" class="btn btn-success btn-sm"><i class="fas fa-plus"></i> Add material</a></div>
+      </div>
+      <div class="card-body p-0 table-responsive">
+        <table class="table table-striped mb-0">
+          <thead><tr><th>Material</th><th>Quantity per unit</th><th>Cost per unit (RWF)</th><th></th></tr></thead>
+          <tbody>
+            {% for item in bom_items %}
+            <tr>
+              <td>{{ item.material.code }} - {{ item.material.name }}</td>
+              <td>{{ item.quantity_per_unit|floatformat:-3 }} {{ item.material.unit }}</td>
+              <td>{{ item.cost_per_unit|floatformat:0 }}</td>
+              <td><a href="{% url 'inventory:bom_delete' item.pk %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No materials yet. Click "Add material".</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">Production Orders for this Product</h3></div>
+      <div class="card-body p-0 table-responsive">
+        <table class="table mb-0">
+          <thead><tr><th>Order</th><th>Line</th><th>Produced</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for o in orders %}
+            <tr>
+              <td><a href="{% url 'production:order_detail' o.pk %}">{{ o.order_no }}</a></td>
+              <td>{{ o.line.name }}</td>
+              <td>{{ o.quantity_produced }} / {{ o.quantity }}</td>
+              <td>{% include "production/status_badge.html" with status=o.status label=o.get_status_display %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No orders for this product.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<a href="{% url 'inventory:product_list' %}" class="btn btn-default"><i class="fas fa-arrow-left mr-1"></i> Back to products</a>
+{% endblock %}

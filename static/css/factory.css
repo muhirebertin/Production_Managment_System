@@ -1,0 +1,50 @@
+/* factory.css: our own small style file, loaded AFTER AdminLTE.
+   It changes AdminLTE's default blue to the factory colours (green and gold). */
+
+:root {
+  --factory-green: #0B5D1E;
+  --factory-green-light: #2E7D32;
+  --factory-gold: #C9A227;
+}
+
+/* ---- Sidebar ---- */
+.main-sidebar { background-color: #0a3d17 !important; }
+.brand-link { border-bottom: 1px solid rgba(201, 162, 39, .5) !important; }
+.brand-link .brand-text { color: var(--factory-gold) !important; font-weight: 600 !important; }
+.nav-sidebar .nav-header { color: var(--factory-gold) !important; font-size: .75rem; letter-spacing: 1px; }
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  background-color: var(--factory-gold) !important; color: #1f1f1f !important;
+}
+
+/* ---- Buttons ---- */
+.btn-primary { background-color: var(--factory-green); border-color: var(--factory-green); }
+.btn-primary:hover, .btn-primary:focus { background-color: var(--factory-green-light); border-color: var(--factory-green-light); }
+.card-primary:not(.card-outline) > .card-header { background-color: var(--factory-green); }
+.card-primary.card-outline { border-top-color: var(--factory-green); }
+
+/* ---- Dashboard header banner ---- */
+.factory-banner {
+  background: linear-gradient(120deg, var(--factory-green) 0%, var(--factory-green-light) 70%, #3d8f3f 100%);
+  border-left: 6px solid var(--factory-gold);
+  border-radius: .5rem; color: #fff; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem;
+}
+.factory-banner h2 { margin: 0; font-weight: 700; }
+.factory-banner .subtitle { color: #e8f2e9; margin: .25rem 0 0; }
+.factory-banner .btn-gold { background: var(--factory-gold); color: #1f1f1f; border: none; font-weight: 600; }
+.factory-banner .btn-gold:hover { background: #e0b733; }
+.factory-banner .btn-outline-light { font-weight: 600; }
+
+/* ---- Summary cards ---- */
+.small-box { border-radius: .5rem; }
+.bg-factory-green { background-color: var(--factory-green) !important; color: #fff !important; }
+.bg-factory-gold { background-color: var(--factory-gold) !important; color: #1f1f1f !important; }
+.small-box.bg-factory-gold .small-box-footer { color: #1f1f1f !important; }
+
+/* ---- Tables ---- */
+.table td, .table th { vertical-align: middle; }
+.table-compact td, .table-compact th { padding: .55rem .75rem; }
+.progress-thin { height: 6px; border-radius: 3px; margin-bottom: 2px; }
+
+/* ---- Action buttons: always on ONE line ---- */
+.actions { white-space: nowrap; width: 1%; }
+.actions .btn { min-width: 70px; }

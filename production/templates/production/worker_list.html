@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Workers{% endblock %}
+{% block page_title %}Workers{% endblock %}
+{% block page_actions %}
+  <a href="{% url 'production:worker_create' %}" class="btn btn-primary"><i class="fas fa-plus mr-1"></i> Add Worker</a>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body p-0 table-responsive">
+    <table class="table table-striped table-hover table-compact mb-0">
+      <thead><tr><th>Employee No.</th><th>Name</th><th>Role</th><th>Phone</th><th>Line</th><th>Login account</th><th class="actions">Actions</th></tr></thead>
+      <tbody>
+        {% for w in workers %}
+        <tr>
+          <td><strong>{{ w.employee_no }}</strong></td>
+          <td>{{ w.full_name }}</td>
+          <td>{{ w.get_role_display }}</td>
+          <td>{{ w.phone }}</td>
+          <td>{{ w.line.name }}</td>
+          <td>{{ w.user.username|default:"-" }}</td>
+          {% url 'production:worker_detail' w.pk as view_url %}
+          {% url 'production:worker_update' w.pk as edit_url %}
+          {% url 'production:worker_delete' w.pk as delete_url %}
+          {% include "actions.html" %}
+        </tr>
+        {% empty %}
+        <tr><td colspan="7">No workers yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

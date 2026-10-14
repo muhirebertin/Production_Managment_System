@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+<!-- form.html: ONE shared template used for every Add / Edit page -->
+
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-7">
+    <div class="card card-primary">
+      <div class="card-header"><h3 class="card-title">{{ title }}</h3></div>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="card-body">
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+          {% endif %}
+
+          {% for field in form %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <!-- validation error shown in red under the field -->
+              <small class="text-danger">{{ field.errors|join:" " }}</small>
+            {% endif %}
+            {% if field.help_text %}<small class="form-text text-muted">{{ field.help_text }}</small>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Save</button>
+          <a href="{% url cancel_url %}" class="btn btn-default">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

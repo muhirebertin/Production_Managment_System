@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+{# base.html: the shared AdminLTE layout (made from AdminLTE's starter.html). #}
+{# Every page extends this file and fills in the "content" block. #}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Dashboard{% endblock %} | Garment Production</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="{% static 'adminlte/plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- AdminLTE Theme style -->
+  <link rel="stylesheet" href="{% static 'adminlte/dist/css/adminlte.min.css' %}">
+  <!-- Our own colours (green and gold), loaded after AdminLTE so they override it -->
+  <link rel="stylesheet" href="{% static 'css/factory.css' %}">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- ===== Top navigation bar ===== -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="{% url 'dashboard' %}" class="nav-link">Home</a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="{% url 'production:order_list' %}" class="nav-link">Production Orders</a>
+      </li>
+    </ul>
+
+    <ul class="navbar-nav ml-auto">
+      {% if user.is_authenticated %}
+        <li class="nav-item">
+          <span class="nav-link"><i class="fas fa-user-circle mr-1"></i>{{ user.username }}</span>
+        </li>
+        <li class="nav-item">
+          <!-- Logout must be sent with POST -->
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-link nav-link"><i class="fas fa-sign-out-alt mr-1"></i>Logout</button>
+          </form>
+        </li>
+      {% else %}
+        <li class="nav-item">
+          <a href="{% url 'login' %}" class="nav-link"><i class="fas fa-sign-in-alt mr-1"></i>Login</a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <!-- ===== Left sidebar menu ===== -->
+  {% with url_name=request.resolver_match.url_name %}
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a href="{% url 'dashboard' %}" class="brand-link">
+      <img src="{% static 'adminlte/dist/img/AdminLTELogo.png' %}" alt="Logo" class="brand-image img-circle elevation-3">
+      <span class="brand-text">Inzozi Garments</span>
+    </a>
+
+    <div class="sidebar">
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+          <li class="nav-item">
+            <a href="{% url 'dashboard' %}" class="nav-link {% if url_name == 'dashboard' %}active{% endif %}">
+              <i class="nav-icon fas fa-tachometer-alt"></i><p>Dashboard</p>
+            </a>
+          </li>
+
+          <li class="nav-header">PRODUCTION</li>
+          <li class="nav-item">
+            <a href="{% url 'production:order_list' %}" class="nav-link {% if 'order' in url_name %}active{% endif %}">
+              <i class="nav-icon fas fa-clipboard-list"></i><p>Production Orders</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'production:line_list' %}" class="nav-link {% if 'line' in url_name %}active{% endif %}">
+              <i class="nav-icon fas fa-industry"></i><p>Production Lines</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'production:machine_list' %}" class="nav-link {% if 'machine' in url_name %}active{% endif %}">
+              <i class="nav-icon fas fa-cogs"></i><p>Machines</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'production:worker_list' %}" class="nav-link {% if 'worker' in url_name %}active{% endif %}">
+              <i class="nav-icon fas fa-hard-hat"></i><p>Workers</p>
+            </a>
+          </li>
+
+          <li class="nav-header">INVENTORY</li>
+          <li class="nav-item">
+            <a href="{% url 'inventory:product_list' %}" class="nav-link {% if 'product' in url_name or 'bom' in url_name %}active{% endif %}">
+              <i class="nav-icon fas fa-tshirt"></i><p>Products</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'inventory:material_list' %}" class="nav-link {% if 'material' in url_name %}active{% endif %}">
+              <i class="nav-icon fas fa-boxes"></i><p>Raw Materials</p>
+            </a>
+          </li>
+
+          <li class="nav-header">ADMINISTRATION</li>
+          <li class="nav-item">
+            <a href="/admin/" class="nav-link">
+              <i class="nav-icon fas fa-user-cog"></i><p>Django Admin</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
+  {% endwith %}
+
+  <!-- ===== Page content ===== -->
+  <div class="content-wrapper">
+    {% block content_header %}
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">{% block page_title %}Dashboard{% endblock %}</h1>
+          </div>
+          <div class="col-sm-6 text-sm-right">
+            {% block page_actions %}{% endblock %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% endblock %}
+
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Success / error messages from the views -->
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+          </div>
+        {% endfor %}
+
+        {% block content %}{% endblock %}
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== Footer ===== -->
+  <footer class="main-footer">
+    <strong>Inzozi Garments Ltd</strong> &middot; Production Management System &copy; 2026
+    <div class="float-right d-none d-sm-inline">Built with Django and AdminLTE 3</div>
+  </footer>
+</div>
+
+<!-- jQuery -->
+<script src="{% static 'adminlte/plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'adminlte/dist/js/adminlte.min.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
